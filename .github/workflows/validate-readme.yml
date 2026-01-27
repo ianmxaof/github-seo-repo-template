@@ -1,0 +1,45 @@
+name: Validate README Structure
+
+on:
+  pull_request:
+    paths:
+      - 'README.md'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate README structure
+        run: |
+          # Check if README.md exists
+          if [ ! -f README.md ]; then
+            echo "❌ README.md is missing"
+            exit 1
+          fi
+          
+          # Check for required H1 title
+          if ! grep -q "^# " README.md; then
+            echo "❌ README.md must start with an H1 title"
+            exit 1
+          fi
+          
+          # Check for key sections (case-insensitive)
+          required_sections=("What This" "Who Should" "Installation\|Getting Started\|Quick Start" "Usage\|Examples" "License")
+          missing_sections=()
+          
+          for section in "${required_sections[@]}"; do
+            if ! grep -qi "##.*$section" README.md; then
+              missing_sections+=("$section")
+            fi
+          done
+          
+          if [ ${#missing_sections[@]} -gt 0 ]; then
+            echo "⚠️  Missing recommended sections: ${missing_sections[*]}"
+            echo "These sections improve SEO and user experience"
+          else
+            echo "✅ README structure looks good"
+          fi
