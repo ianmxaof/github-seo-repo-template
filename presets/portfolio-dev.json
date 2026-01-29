@@ -1,0 +1,58 @@
+{
+  "id": "portfolio-dev",
+  "name": "Portfolio Developer",
+  "description": "Optimizes repos as portfolio pieces for hiring managers, recruiters, and teammates evaluating skills and craft.",
+  "audience": "Hiring managers, recruiters, future teammates.",
+  "tone": "narrative",
+  "targetPlatforms": ["web-app", "mobile-app", "demo-project"],
+  "exampleRepos": [
+    "https://example.com/placeholder-portfolio-repo-1"
+  ],
+  "namingRules": {
+    "requirePrimaryTech": false,
+    "allowBrandingPrefix": false,
+    "maxLength": 45,
+    "discourageCutesyNames": true
+  },
+  "descriptionRules": {
+    "minLength": 80,
+    "maxLength": 200,
+    "mustMentionAudience": true,
+    "mustMentionPlatform": true,
+    "mustMentionValueProp": true
+  },
+  "readmeRequirements": {
+    "requireH1": true,
+    "requireWhatWhoPlatformIntro": true,
+    "requiredSections": [
+      "What This Is",
+      "Why I Built This",
+      "Tech Stack",
+      "Key Features",
+      "How to Run It"
+    ],
+    "recommendedSections": ["What I Would Improve Next"],
+    "minWordCount": 500,
+    "maxWordCount": 3000
+  },
+  "topicProfile": {
+    "minCount": 5,
+    "maxCount": 12,
+    "requiredTopics": [],
+    "recommendedTopics": ["portfolio", "learning", "examples"]
+  },
+  "linkingExpectations": {
+    "requireDocsLink": false,
+    "requireIssueTrackerLink": false,
+    "requireHomepageOrDemoLink": true
+  },
+  "weights": {
+    "nameClarity": 1.1,
+    "descriptionQuality": 1.3,
+    "topicCoverage": 0.8,
+    "readmeStructure": 1.4,
+    "activityRecency": 0.7,
+    "metadataHygiene": 0.8
+  }
+}
+

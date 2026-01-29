@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitHub Account Presentation — Report</title>
+  <style>
+    :root { --bg: #0d1117; --fg: #c9d1d9; --border: #30363d; --accent: #58a6ff; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--fg); margin: 1rem; }
+    h1 { font-size: 1.25rem; }
+    .load, .scan-form { margin-bottom: 1rem; }
+    .load label, .scan-form label { display: block; margin-bottom: 0.5rem; }
+    .scan-form input, .scan-form select { background: #161b22; border: 1px solid var(--border); color: var(--fg); padding: 0.5rem; border-radius: 4px; margin-right: 0.5rem; margin-bottom: 0.5rem; }
+    .scan-form .row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; }
+    textarea { width: 100%; min-height: 120px; background: #161b22; border: 1px solid var(--border); color: var(--fg); padding: 0.5rem; font-family: monospace; font-size: 12px; }
+    button { background: var(--accent); color: #fff; border: none; padding: 0.5rem 1rem; cursor: pointer; border-radius: 6px; }
+    button:hover { opacity: 0.9; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    table { border-collapse: collapse; width: 100%; margin-top: 1rem; font-size: 13px; }
+    th, td { text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--border); }
+    th { font-weight: 600; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .score { font-variant-numeric: tabular-nums; }
+    .score.low { color: #f85149; }
+    .score.mid { color: #d29922; }
+    .score.high { color: #3fb950; }
+    .detail { margin-top: 2rem; padding: 1rem; background: #161b22; border-radius: 6px; border: 1px solid var(--border); }
+    .detail h2 { font-size: 1rem; margin-bottom: 0.5rem; }
+    .suggestions { list-style: none; padding: 0; margin: 0; }
+    .suggestions li { padding: 0.25rem 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .error { color: #f85149; margin-top: 0.5rem; }
+    .cards { display: grid; gap: 1rem; margin-top: 1rem; }
+    .card { background: #161b22; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+    .card h3 { margin: 0 0 0.5rem 0; font-size: 1rem; }
+    .card .scores { display: flex; flex-wrap: wrap; gap: 0.5rem; font-size: 12px; margin-bottom: 0.5rem; }
+    .card .scores span { padding: 0.2rem 0.4rem; border-radius: 4px; background: var(--bg); }
+    .card .sugg-toggle { font-size: 12px; cursor: pointer; color: var(--accent); margin-top: 0.5rem; }
+    .card .sugg-list { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border); display: none; }
+    .card .sugg-list.open { display: block; }
+    .tabs { margin-bottom: 1rem; }
+    .tabs button { margin-right: 0.5rem; background: transparent; color: var(--fg); border: 1px solid var(--border); }
+    .tabs button.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  </style>
+</head>
+<body>
+  <h1>GitHub Account Presentation — Report</h1>
+
+  <div class="tabs">
+    <button type="button" id="tab-scan" class="active">Run scan</button>
+    <button type="button" id="tab-history">History</button>
+    <button type="button" id="tab-paste">Paste JSON</button>
+  </div>
+
+  <div id="panel-scan">
+    <div class="scan-form">
+      <label>Backend URL (e.g. http://localhost:8000)</label>
+      <div class="row">
+        <input type="text" id="apiBase" value="http://localhost:8000" style="width: 280px;" />
+      </div>
+      <label>GitHub username</label>
+      <div class="row">
+        <input type="text" id="username" placeholder="ianmxaof" />
+      </div>
+      <label>Repository (optional — leave blank for full account)</label>
+      <div class="row">
+        <input type="text" id="repo" placeholder="repo-name" />
+      </div>
+      <label>Personal Access Token (PAT)</label>
+      <div class="row">
+        <input type="password" id="token" placeholder="ghp_xxx" style="width: 320px;" />
+      </div>
+      <label>Preset</label>
+      <div class="row">
+        <select id="preset">
+          <option value="indie-hacker">indie-hacker</option>
+          <option value="open-source-maintainer">open-source-maintainer</option>
+          <option value="portfolio-dev">portfolio-dev</option>
+          <option value="enterprise-internal">enterprise-internal</option>
+          <option value="technical-writer">technical-writer</option>
+        </select>
+        <button type="button" id="viewPreset">View preset</button>
+        <button type="button" id="exportPreset">Export</button>
+        <button type="button" id="runScan">Run scan</button>
+      </div>
+      <div class="row">
+        <label><input type="checkbox" id="useCustomPreset" /> Use custom preset (paste JSON below)</label>
+      </div>
+      <div id="customPresetWrap" style="display:none;">
+        <label>Custom preset JSON</label>
+        <textarea id="customPresetJson" rows="6" style="font-size:12px;" placeholder='{"id":"my-preset","name":"My Preset",...}'></textarea>
+      </div>
+      <div id="presetView" class="detail" style="display:none; margin-top:0.5rem;">
+        <h3>Preset JSON</h3>
+        <pre id="presetViewContent" style="font-size:11px; overflow:auto; max-height:200px;"></pre>
+        <button type="button" id="closePresetView">Close</button>
+      </div>
+      <div class="row">
+        <label><input type="checkbox" id="useLlm" /> Use AI suggestions (LLM)</label>
+      </div>
+      <div id="llmKeyWrap" style="display:none;">
+        <label>LLM API key (optional — backend can use env)</label>
+        <input type="password" id="llmApiKey" placeholder="sk-..." style="width:280px;" />
+      </div>
+      <div id="scanError" class="error"></div>
+      <div id="scanLoading" style="display:none;">Scanning…</div>
+    </div>
+    <div id="cards-wrap" class="cards"></div>
+  </div>
+
+  <div id="panel-history" style="display:none;">
+    <p>View past scans for a GitHub username (stored on the backend).</p>
+    <div class="row">
+      <input type="text" id="historyUsername" placeholder="GitHub username" />
+      <button type="button" id="loadHistory">Load history</button>
+    </div>
+    <div id="historyError" class="error"></div>
+    <div id="historyList" class="cards" style="margin-top:1rem;"></div>
+  </div>
+
+  <div id="panel-paste" style="display:none;">
+    <p>Paste JSON from <code>gh-visibility scan --output json</code> to view scores and suggestions.</p>
+    <div class="load">
+      <label for="json">Report JSON</label>
+      <textarea id="json" placeholder='[{"repo":{"fullName":"owner/repo",...},"scores":{...},...}]'></textarea>
+      <button type="button" id="render">Render</button>
+      <div id="error" class="error"></div>
+    </div>
+    <div id="table-wrap"></div>
+    <div id="detail" class="detail" style="display:none;"></div>
+  </div>
+
+  <script>
+    const API_BASE_KEY = 'gh_visibility_api_base';
+
+    function scoreClass(score) {
+      if (score == null) return '';
+      const n = Number(score);
+      if (n >= 70) return 'high';
+      if (n >= 40) return 'mid';
+      return 'low';
+    }
+    function getScore(scores, key) {
+      const v = scores && scores[key];
+      return (v && typeof v === 'object' && 'score' in v) ? v.score : null;
+    }
+
+    function renderCards(evals) {
+      const wrap = document.getElementById('cards-wrap');
+      if (!Array.isArray(evals) || evals.length === 0) {
+        wrap.innerHTML = '<p>No repositories in report.</p>';
+        return;
+      }
+      let html = '';
+      evals.forEach((e, i) => {
+        const repo = e.repo || {};
+        const scores = e.scores || {};
+        const sugg = e.suggestions || [];
+        const fullName = repo.fullName || repo.name || '?';
+        const link = repo.htmlUrl ? '<a href="' + repo.htmlUrl + '" target="_blank" rel="noopener">' + fullName + '</a>' : fullName;
+        const overall = getScore(scores, 'overall');
+        const dims = ['nameClarity','descriptionQuality','topicCoverage','readmeStructure','activityRecency','metadataHygiene'];
+        let scoreSpans = '';
+        dims.forEach(k => {
+          const s = getScore(scores, k);
+          scoreSpans += '<span class="score ' + scoreClass(s) + '">' + k.replace(/([A-Z])/g, ' $1').trim() + ': ' + (s != null ? Math.round(s) : '–') + '</span>';
+        });
+        html += '<div class="card" data-idx="' + i + '">';
+        html += '<h3>' + link + ' <span class="score ' + scoreClass(overall) + '">Overall: ' + (overall != null ? Math.round(overall) : '–') + '</span></h3>';
+        html += '<div class="scores">' + scoreSpans + '</div>';
+        if (sugg.length) {
+          html += '<div class="sugg-toggle" data-idx="' + i + '">Show ' + sugg.length + ' suggestion(s)</div>';
+          html += '<ul class="sugg-list" id="sugg-' + i + '">';
+          sugg.forEach(s => { html += '<li>[' + (s.severity || 'note') + '] ' + (s.message || '') + '</li>'; });
+          html += '</ul>';
+        }
+        html += '</div>';
+      });
+      wrap.innerHTML = html;
+      wrap.querySelectorAll('.sugg-toggle').forEach(el => {
+        el.addEventListener('click', () => {
+          const list = document.getElementById('sugg-' + el.getAttribute('data-idx'));
+          if (list) list.classList.toggle('open');
+        });
+      });
+    }
+
+    function renderTable(evals) {
+      const wrap = document.getElementById('table-wrap');
+      const detailEl = document.getElementById('detail');
+      detailEl.style.display = 'none';
+      if (!Array.isArray(evals) || evals.length === 0) {
+        wrap.innerHTML = '<p>No repositories in report.</p>';
+        return;
+      }
+      let html = '<table><thead><tr><th>Repo</th><th>Overall</th><th>Name</th><th>Desc</th><th>Topics</th><th>README</th><th>Activity</th><th>Meta</th><th>Suggestions</th></tr></thead><tbody>';
+      evals.forEach((e, i) => {
+        const repo = e.repo || {};
+        const scores = e.scores || {};
+        const sugg = (e.suggestions || []).length;
+        const fullName = repo.fullName || repo.name || '?';
+        const link = repo.htmlUrl ? '<a href="' + repo.htmlUrl + '" target="_blank" rel="noopener">' + fullName + '</a>' : fullName;
+        html += '<tr data-idx="' + i + '">';
+        html += '<td>' + link + '</td>';
+        ['overall','nameClarity','descriptionQuality','topicCoverage','readmeStructure','activityRecency','metadataHygiene'].forEach(k => {
+          const s = getScore(scores, k);
+          html += '<td class="score ' + scoreClass(s) + '">' + (s != null ? Math.round(s) : '–') + '</td>';
+        });
+        html += '<td>' + (sugg > 0 ? sugg : '–') + '</td>';
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      wrap.innerHTML = html;
+      wrap.querySelectorAll('tbody tr').forEach(tr => {
+        tr.addEventListener('click', () => {
+          const idx = parseInt(tr.getAttribute('data-idx'), 10);
+          const e = evals[idx];
+          const repo = e.repo || {};
+          const scores = e.scores || {};
+          const sugg = e.suggestions || [];
+          let d = '<h2>' + (repo.fullName || repo.name) + '</h2>';
+          d += '<p><strong>Overall:</strong> ' + (getScore(scores, 'overall') != null ? Math.round(getScore(scores, 'overall')) : '–') + '</p>';
+          if (sugg.length) {
+            d += '<ul class="suggestions">';
+            sugg.forEach(s => { d += '<li>[' + (s.severity || 'note') + '] ' + (s.message || '') + '</li>'; });
+            d += '</ul>';
+          } else {
+            d += '<p>No suggestions for this repo.</p>';
+          }
+          detailEl.innerHTML = d;
+          detailEl.style.display = 'block';
+        });
+      });
+    }
+
+    function render(evals) {
+      renderCards(evals);
+      if (document.getElementById('panel-paste').style.display !== 'none') {
+        renderTable(evals);
+      }
+    }
+
+    document.getElementById('tab-scan').addEventListener('click', () => {
+      document.getElementById('panel-scan').style.display = 'block';
+      document.getElementById('panel-history').style.display = 'none';
+      document.getElementById('panel-paste').style.display = 'none';
+      document.getElementById('tab-scan').classList.add('active');
+      document.getElementById('tab-history').classList.remove('active');
+      document.getElementById('tab-paste').classList.remove('active');
+    });
+    document.getElementById('tab-history').addEventListener('click', () => {
+      document.getElementById('panel-scan').style.display = 'none';
+      document.getElementById('panel-history').style.display = 'block';
+      document.getElementById('panel-paste').style.display = 'none';
+      document.getElementById('tab-history').classList.add('active');
+      document.getElementById('tab-scan').classList.remove('active');
+      document.getElementById('tab-paste').classList.remove('active');
+    });
+    document.getElementById('tab-paste').addEventListener('click', () => {
+      document.getElementById('panel-scan').style.display = 'none';
+      document.getElementById('panel-history').style.display = 'none';
+      document.getElementById('panel-paste').style.display = 'block';
+      document.getElementById('tab-paste').classList.add('active');
+      document.getElementById('tab-scan').classList.remove('active');
+      document.getElementById('tab-history').classList.remove('active');
+    });
+
+    document.getElementById('useCustomPreset').addEventListener('change', function() {
+      document.getElementById('customPresetWrap').style.display = this.checked ? 'block' : 'none';
+    });
+    document.getElementById('useLlm').addEventListener('change', function() {
+      document.getElementById('llmKeyWrap').style.display = this.checked ? 'block' : 'none';
+    });
+
+    document.getElementById('viewPreset').addEventListener('click', async () => {
+      const base = (document.getElementById('apiBase').value || '').replace(/\/$/, '');
+      const presetId = document.getElementById('preset').value;
+      const viewEl = document.getElementById('presetView');
+      const contentEl = document.getElementById('presetViewContent');
+      try {
+        const res = await fetch(base + '/presets/' + encodeURIComponent(presetId));
+        if (!res.ok) { contentEl.textContent = 'Failed to load preset.'; viewEl.style.display = 'block'; return; }
+        const data = await res.json();
+        contentEl.textContent = JSON.stringify(data, null, 2);
+        viewEl.style.display = 'block';
+      } catch (e) {
+        contentEl.textContent = 'Error: ' + e.message;
+        viewEl.style.display = 'block';
+      }
+    });
+    document.getElementById('closePresetView').addEventListener('click', () => {
+      document.getElementById('presetView').style.display = 'none';
+    });
+    document.getElementById('exportPreset').addEventListener('click', async () => {
+      const base = (document.getElementById('apiBase').value || '').replace(/\/$/, '');
+      const presetId = document.getElementById('preset').value;
+      try {
+        const res = await fetch(base + '/presets/' + encodeURIComponent(presetId));
+        if (!res.ok) return;
+        const data = await res.json();
+        const a = document.createElement('a');
+        a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(data, null, 2));
+        a.download = presetId + '.json';
+        a.click();
+      } catch (_) {}
+    });
+
+    document.getElementById('loadHistory').addEventListener('click', async () => {
+      const base = (document.getElementById('apiBase').value || '').replace(/\/$/, '');
+      const username = document.getElementById('historyUsername').value.trim();
+      const errEl = document.getElementById('historyError');
+      const listEl = document.getElementById('historyList');
+      errEl.textContent = '';
+      listEl.innerHTML = '';
+      if (!base) { errEl.textContent = 'Set backend URL.'; return; }
+      if (!username) { errEl.textContent = 'Enter GitHub username.'; return; }
+      try {
+        const res = await fetch(base + '/history?username=' + encodeURIComponent(username) + '&limit=20');
+        const data = await res.json().catch(() => []);
+        if (!res.ok) { errEl.textContent = data.detail || res.statusText; return; }
+        if (!Array.isArray(data) || data.length === 0) {
+          listEl.innerHTML = '<p>No scan history for this username.</p>';
+          return;
+        }
+        let html = '';
+        data.forEach(s => {
+          html += '<div class="card">';
+          html += '<p><strong>' + (s.timestamp || '').replace('T', ' ').slice(0, 19) + '</strong> — preset: ' + (s.preset_id || '') + ', repos: ' + (s.repo_count || 0) + '</p>';
+          if (Array.isArray(s.summary) && s.summary.length) {
+            html += '<ul style="font-size:12px; margin:0;">';
+            s.summary.slice(0, 5).forEach(r => {
+              html += '<li>' + (r.fullName || '?') + ' — overall: ' + (r.overall != null ? Math.round(r.overall) : '–') + '</li>';
+            });
+            if (s.summary.length > 5) html += '<li>… and ' + (s.summary.length - 5) + ' more</li>';
+            html += '</ul>';
+          }
+          html += '</div>';
+        });
+        listEl.innerHTML = html;
+      } catch (e) {
+        errEl.textContent = 'Request failed: ' + e.message;
+      }
+    });
+
+    document.getElementById('runScan').addEventListener('click', async () => {
+      const base = (document.getElementById('apiBase').value || '').replace(/\/$/, '');
+      const username = document.getElementById('username').value.trim();
+      const token = document.getElementById('token').value.trim();
+      const repo = document.getElementById('repo').value.trim() || null;
+      const preset = document.getElementById('preset').value;
+      const useCustom = document.getElementById('useCustomPreset').checked;
+      const customJson = document.getElementById('customPresetJson').value.trim();
+      const useLlm = document.getElementById('useLlm').checked;
+      const llmApiKey = document.getElementById('llmApiKey').value.trim();
+      const errEl = document.getElementById('scanError');
+      const loadingEl = document.getElementById('scanLoading');
+      const btn = document.getElementById('runScan');
+      errEl.textContent = '';
+      if (!base) { errEl.textContent = 'Set backend URL.'; return; }
+      if (!username) { errEl.textContent = 'Enter GitHub username.'; return; }
+      if (!token) { errEl.textContent = 'Enter PAT.'; return; }
+      let presetPayload = null;
+      if (useCustom && customJson) {
+        try {
+          presetPayload = JSON.parse(customJson);
+        } catch (e) {
+          errEl.textContent = 'Invalid custom preset JSON: ' + e.message;
+          return;
+        }
+      }
+      try {
+        btn.disabled = true;
+        loadingEl.style.display = 'block';
+        const body = { username, token, preset, repo, mode: 'suggest' };
+        if (presetPayload) body.preset_payload = presetPayload;
+        if (useLlm) {
+          body.use_llm = true;
+          if (llmApiKey) body.llm_api_key = llmApiKey;
+        }
+        const res = await fetch(base + '/scan', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          errEl.textContent = data.detail || res.statusText || 'Scan failed';
+          return;
+        }
+        renderCards(Array.isArray(data) ? data : []);
+      } catch (e) {
+        errEl.textContent = 'Request failed: ' + e.message;
+      } finally {
+        loadingEl.style.display = 'none';
+        btn.disabled = false;
+      }
+    });
+
+    document.getElementById('render').addEventListener('click', () => {
+      const raw = document.getElementById('json').value.trim();
+      const errEl = document.getElementById('error');
+      errEl.textContent = '';
+      if (!raw) { errEl.textContent = 'Paste JSON first.'; return; }
+      try {
+        const data = JSON.parse(raw);
+        renderTable(data);
+      } catch (e) {
+        errEl.textContent = 'Invalid JSON: ' + e.message;
+      }
+    });
+
+    (async function loadPresets() {
+      const base = (document.getElementById('apiBase').value || '').replace(/\/$/, '');
+      if (!base) return;
+      try {
+        const res = await fetch(base + '/presets');
+        if (!res.ok) return;
+        const ids = await res.json();
+        if (Array.isArray(ids) && ids.length) {
+          const sel = document.getElementById('preset');
+          sel.innerHTML = ids.map(id => '<option value="' + id + '">' + id + '</option>').join('');
+        }
+      } catch (_) {}
+    })();
+  </script>
+</body>
+</html>

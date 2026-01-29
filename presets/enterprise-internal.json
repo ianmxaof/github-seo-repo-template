@@ -1,0 +1,58 @@
+{
+  "id": "enterprise-internal",
+  "name": "Enterprise Internal",
+  "description": "Optimizes repos for internal teams and stakeholders inside a company, emphasizing clarity, stability, and maintainability.",
+  "audience": "Internal engineers, SREs, and technical leads.",
+  "tone": "technical",
+  "targetPlatforms": ["service", "library", "infrastructure-module"],
+  "exampleRepos": [
+    "https://example.com/placeholder-enterprise-repo-1"
+  ],
+  "namingRules": {
+    "requirePrimaryTech": false,
+    "allowBrandingPrefix": true,
+    "maxLength": 50,
+    "discourageCutesyNames": true
+  },
+  "descriptionRules": {
+    "minLength": 60,
+    "maxLength": 160,
+    "mustMentionAudience": false,
+    "mustMentionPlatform": true,
+    "mustMentionValueProp": true
+  },
+  "readmeRequirements": {
+    "requireH1": true,
+    "requireWhatWhoPlatformIntro": true,
+    "requiredSections": [
+      "Overview",
+      "Architecture",
+      "Running Locally",
+      "Deployment",
+      "Operational Notes"
+    ],
+    "recommendedSections": ["SLOs and Alerts", "Ownership"],
+    "minWordCount": 700,
+    "maxWordCount": 5000
+  },
+  "topicProfile": {
+    "minCount": 3,
+    "maxCount": 10,
+    "requiredTopics": [],
+    "recommendedTopics": ["internal", "service", "infrastructure"]
+  },
+  "linkingExpectations": {
+    "requireDocsLink": true,
+    "requireIssueTrackerLink": true,
+    "requireHomepageOrDemoLink": false
+  },
+  "weights": {
+    "nameClarity": 1.1,
+    "descriptionQuality": 1.1,
+    "topicCoverage": 0.9,
+    "readmeStructure": 1.5,
+    "activityRecency": 1.0,
+    "metadataHygiene": 1.4
+  }
+}
+

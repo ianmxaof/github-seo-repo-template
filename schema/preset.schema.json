@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PresentationPreset",
+  "description": "Schema for a GitHub account presentation preset that defines expectations and weights for repo evaluation.",
+  "type": "object",
+  "required": ["id", "name", "description", "audience", "tone", "weights"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Stable identifier for the preset (e.g., indie-hacker)."
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the preset."
+    },
+    "description": {
+      "type": "string",
+      "description": "Short description of the presentation philosophy."
+    },
+    "audience": {
+      "type": "string",
+      "description": "Primary audience this preset optimizes for (e.g., recruiters, OSS contributors, potential users)."
+    },
+    "tone": {
+      "type": "string",
+      "description": "High-level tone guidance (e.g., technical, product, narrative, minimal)."
+    },
+    "targetPlatforms": {
+      "type": "array",
+      "description": "List of ecosystems or platforms this preset is tuned for (e.g., vscode-extension, npm-package).",
+      "items": {
+        "type": "string"
+      }
+    },
+    "exampleRepos": {
+      "type": "array",
+      "description": "Optional list of reference repositories that embody this preset.",
+      "items": {
+        "type": "string"
+      }
+    },
+    "namingRules": {
+      "type": "object",
+      "description": "Expectations for repository names.",
+      "properties": {
+        "requirePrimaryTech": { "type": "boolean" },
+        "allowBrandingPrefix": { "type": "boolean" },
+        "maxLength": { "type": "integer", "minimum": 1 },
+        "discourageCutesyNames": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "descriptionRules": {
+      "type": "object",
+      "description": "Expectations for repository descriptions.",
+      "properties": {
+        "minLength": { "type": "integer", "minimum": 0 },
+        "maxLength": { "type": "integer", "minimum": 1 },
+        "mustMentionAudience": { "type": "boolean" },
+        "mustMentionPlatform": { "type": "boolean" },
+        "mustMentionValueProp": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "readmeRequirements": {
+      "type": "object",
+      "description": "Requirements and preferences for README structure.",
+      "properties": {
+        "requireH1": { "type": "boolean" },
+        "requireWhatWhoPlatformIntro": { "type": "boolean" },
+        "requiredSections": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "recommendedSections": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "minWordCount": { "type": "integer", "minimum": 0 },
+        "maxWordCount": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "topicProfile": {
+      "type": "object",
+      "description": "Expectations for topics/tags.",
+      "properties": {
+        "minCount": { "type": "integer", "minimum": 0 },
+        "maxCount": { "type": "integer", "minimum": 0 },
+        "requiredTopics": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "recommendedTopics": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "linkingExpectations": {
+      "type": "object",
+      "description": "Expectations for external/internal links in README.",
+      "properties": {
+        "requireDocsLink": { "type": "boolean" },
+        "requireIssueTrackerLink": { "type": "boolean" },
+        "requireHomepageOrDemoLink": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "weights": {
+      "type": "object",
+      "description": "Relative weights for each scoring dimension.",
+      "properties": {
+        "nameClarity": { "type": "number" },
+        "descriptionQuality": { "type": "number" },
+        "topicCoverage": { "type": "number" },
+        "readmeStructure": { "type": "number" },
+        "activityRecency": { "type": "number" },
+        "metadataHygiene": { "type": "number" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
+

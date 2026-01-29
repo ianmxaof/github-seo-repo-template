@@ -39,3 +39,16 @@ dist/
 build/
 *.min.js
 *.min.css
+
+# Backend scan history (SQLite)
+backend/data/
+
+# Local scan output (may be large or sensitive)
+my_account.json
+*.report-*.md
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg

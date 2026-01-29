@@ -1,0 +1,36 @@
+# Project Philosophy — GitHub Account Presentation Optimizer
+
+This project exists to analyze and suggest improvements to the public-facing presentation of GitHub repositories across an entire account.
+
+## Core Principles
+
+- The tool is advisory, never authoritative.
+- The tool does not mutate repositories automatically.
+- Suggestions must be explainable and grounded in detected repository state.
+- Presets define presentation philosophy, not rigid templates.
+- Human-in-the-loop decision making is mandatory.
+
+## Scope Constraints
+
+- Read-only GitHub API access by default.
+- CLI is the primary interface; dashboards are derived views.
+- No automatic commits or content writes.
+- No ranking or scoring against other users.
+
+## What This Project Is Not
+
+- Not a growth hacking tool.
+- Not an SEO spam generator.
+- Not a GitHub account manager.
+- Not a content factory.
+
+## Development Guidance
+
+- Favor semantic analysis over heuristics.
+- Prefer explicit data models over implicit assumptions.
+- Optimize for clarity, not cleverness.
+- Any new feature must directly improve presentation coherence.
+
+If a feature does not help a human understand how a repository presents itself, it is out of scope.
+
+See PRODUCT_INTENT.md and RULES.md for full intent and guardrails.

@@ -1,0 +1,213 @@
+{
+  "version": "1.0.0",
+  "dimensions": [
+    {
+      "id": "nameClarity",
+      "label": "Repository Name Clarity",
+      "description": "How clearly the repository name communicates what the project is and, when appropriate, the primary technology or platform.",
+      "scale": {
+        "min": 0,
+        "max": 100
+      },
+      "signals": [
+        "Length of the name",
+        "Presence of technology/platform keywords",
+        "Use of clear separators (e.g., hyphens) instead of ambiguous casing",
+        "Avoidance of internal-only or jokey names"
+      ],
+      "bands": [
+        {
+          "min": 0,
+          "max": 39,
+          "label": "Unclear",
+          "description": "Name is cryptic, overly cute, or provides no hint of purpose or tech stack."
+        },
+        {
+          "min": 40,
+          "max": 69,
+          "label": "Partial",
+          "description": "Name gives some signal but may be missing key context like platform or tech."
+        },
+        {
+          "min": 70,
+          "max": 100,
+          "label": "Clear",
+          "description": "Name is literal, searchable, and aligned with how users would describe the project."
+        }
+      ]
+    },
+    {
+      "id": "descriptionQuality",
+      "label": "Description Quality",
+      "description": "How well the short description communicates what the project does, who it is for, and on which platform or ecosystem it operates.",
+      "scale": {
+        "min": 0,
+        "max": 100
+      },
+      "signals": [
+        "Presence of a description",
+        "Character length within an acceptable range",
+        "Mention of primary value proposition",
+        "Mention of target audience and/or platform"
+      ],
+      "bands": [
+        {
+          "min": 0,
+          "max": 39,
+          "label": "Missing or Vague",
+          "description": "No description set, or description is too generic to be useful."
+        },
+        {
+          "min": 40,
+          "max": 69,
+          "label": "Basic",
+          "description": "Description exists but lacks either clear value proposition, audience, or platform context."
+        },
+        {
+          "min": 70,
+          "max": 100,
+          "label": "Strong",
+          "description": "Description clearly states what the project does, who it is for, and where it fits."
+        }
+      ]
+    },
+    {
+      "id": "topicCoverage",
+      "label": "Topic Coverage",
+      "description": "How well the repository uses GitHub topics to communicate technology, use case, and domain.",
+      "scale": {
+        "min": 0,
+        "max": 100
+      },
+      "signals": [
+        "Number of topics set",
+        "Presence of technology, platform, and use-case topics",
+        "Avoidance of redundant or low-signal topics"
+      ],
+      "bands": [
+        {
+          "min": 0,
+          "max": 39,
+          "label": "Sparse",
+          "description": "No topics or only 1–2 generic topics."
+        },
+        {
+          "min": 40,
+          "max": 69,
+          "label": "Moderate",
+          "description": "Some useful topics set, but missing important technology or use-case markers."
+        },
+        {
+          "min": 70,
+          "max": 100,
+          "label": "Comprehensive",
+          "description": "Topics clearly capture tech stack, platform, and primary use cases without redundancy."
+        }
+      ]
+    },
+    {
+      "id": "readmeStructure",
+      "label": "README Presence & Structure",
+      "description": "Whether a README exists and how well it follows clear, skimmable structure that answers WHAT, WHO, and HOW.",
+      "scale": {
+        "min": 0,
+        "max": 100
+      },
+      "signals": [
+        "Presence of README",
+        "H1 title present",
+        "First paragraph covers WHAT + WHO + PLATFORM",
+        "Presence of key sections (Installation, Usage, Configuration, Contributing, License)"
+      ],
+      "bands": [
+        {
+          "min": 0,
+          "max": 39,
+          "label": "Missing or Minimal",
+          "description": "No README or a very short README that does not help a new visitor."
+        },
+        {
+          "min": 40,
+          "max": 69,
+          "label": "Basic",
+          "description": "README exists and covers basics but is missing important sections or structure."
+        },
+        {
+          "min": 70,
+          "max": 100,
+          "label": "Well-Structured",
+          "description": "README clearly explains what the project is, who it is for, and how to use it, with logical sections."
+        }
+      ]
+    },
+    {
+      "id": "activityRecency",
+      "label": "Activity Recency",
+      "description": "How recently the repository has seen activity, used only as a weak signal of whether the project appears abandoned.",
+      "scale": {
+        "min": 0,
+        "max": 100
+      },
+      "signals": [
+        "Time since last push",
+        "Time since last release (if available)"
+      ],
+      "bands": [
+        {
+          "min": 0,
+          "max": 39,
+          "label": "Stale",
+          "description": "No visible activity for a long period; may appear abandoned without explicit archival messaging."
+        },
+        {
+          "min": 40,
+          "max": 69,
+          "label": "Aging",
+          "description": "Somewhat old, but not clearly abandoned."
+        },
+        {
+          "min": 70,
+          "max": 100,
+          "label": "Recently Active",
+          "description": "Recent commits or releases indicate current maintenance."
+        }
+      ]
+    },
+    {
+      "id": "metadataHygiene",
+      "label": "Metadata Hygiene",
+      "description": "Overall cleanliness and completeness of repository metadata beyond name/description/topics.",
+      "scale": {
+        "min": 0,
+        "max": 100
+      },
+      "signals": [
+        "Presence of license file",
+        "Presence of contribution guidelines",
+        "Presence of issue templates or PR templates",
+        "Archived flag used appropriately for inactive projects"
+      ],
+      "bands": [
+        {
+          "min": 0,
+          "max": 39,
+          "label": "Messy",
+          "description": "Key metadata is missing or inconsistent; project looks unfinished or unmaintained."
+        },
+        {
+          "min": 40,
+          "max": 69,
+          "label": "Okay",
+          "description": "Most essentials are present, but some important metadata is missing."
+        },
+        {
+          "min": 70,
+          "max": 100,
+          "label": "Clean",
+          "description": "Metadata is complete, consistent, and aligned with project status."
+        }
+      ]
+    }
+  ]
+}
+

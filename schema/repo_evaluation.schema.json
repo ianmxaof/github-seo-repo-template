@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RepoEvaluation",
+  "description": "Schema for normalized input, scoring output, and suggestions for a single repository.",
+  "type": "object",
+  "required": ["repo", "analysis", "scores"],
+  "properties": {
+    "repo": {
+      "type": "object",
+      "description": "Selected fields from the GitHub API response.",
+      "required": ["id", "name", "fullName", "htmlUrl", "private", "description", "topics"],
+      "properties": {
+        "id": { "type": "integer" },
+        "name": { "type": "string" },
+        "fullName": { "type": "string" },
+        "htmlUrl": { "type": "string", "format": "uri" },
+        "private": { "type": "boolean" },
+        "description": { "type": ["string", "null"] },
+        "topics": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "archived": { "type": "boolean" },
+        "pushedAt": { "type": ["string", "null"], "format": "date-time" },
+        "defaultBranch": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "analysis": {
+      "type": "object",
+      "description": "Derived, normalized fields used for scoring.",
+      "properties": {
+        "hasReadme": { "type": "boolean" },
+        "readmeHeadingCount": { "type": "integer", "minimum": 0 },
+        "readmeWords": { "type": "integer", "minimum": 0 },
+        "readmeSections": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "introHasWhatWhoPlatform": { "type": "boolean" },
+        "nameLength": { "type": "integer", "minimum": 0 },
+        "descriptionLength": { "type": "integer", "minimum": 0 },
+        "topicCount": { "type": "integer", "minimum": 0 },
+        "daysSinceLastPush": { "type": "integer", "minimum": 0 },
+        "hasLicense": { "type": "boolean" },
+        "hasContributing": { "type": "boolean" },
+        "hasIssueTemplates": { "type": "boolean" },
+        "hasPrTemplate": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    },
+    "scores": {
+      "type": "object",
+      "description": "Per-dimension scores and explanations.",
+      "properties": {
+        "nameClarity": {
+          "type": "object",
+          "required": ["score", "band", "explanation"],
+          "properties": {
+            "score": { "type": "number" },
+            "band": { "type": "string" },
+            "explanation": { "type": "string" }
+          }
+        },
+        "descriptionQuality": {
+          "type": "object",
+          "required": ["score", "band", "explanation"],
+          "properties": {
+            "score": { "type": "number" },
+            "band": { "type": "string" },
+            "explanation": { "type": "string" }
+          }
+        },
+        "topicCoverage": {
+          "type": "object",
+          "required": ["score", "band", "explanation"],
+          "properties": {
+            "score": { "type": "number" },
+            "band": { "type": "string" },
+            "explanation": { "type": "string" }
+          }
+        },
+        "readmeStructure": {
+          "type": "object",
+          "required": ["score", "band", "explanation"],
+          "properties": {
+            "score": { "type": "number" },
+            "band": { "type": "string" },
+            "explanation": { "type": "string" }
+          }
+        },
+        "activityRecency": {
+          "type": "object",
+          "required": ["score", "band", "explanation"],
+          "properties": {
+            "score": { "type": "number" },
+            "band": { "type": "string" },
+            "explanation": { "type": "string" }
+          }
+        },
+        "metadataHygiene": {
+          "type": "object",
+          "required": ["score", "band", "explanation"],
+          "properties": {
+            "score": { "type": "number" },
+            "band": { "type": "string" },
+            "explanation": { "type": "string" }
+          }
+        },
+        "overall": {
+          "type": "object",
+          "required": ["score", "explanation"],
+          "properties": {
+            "score": { "type": "number" },
+            "explanation": { "type": "string" }
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "suggestions": {
+      "type": "array",
+      "description": "Optional structured suggestions generated in later phases.",
+      "items": {
+        "type": "object",
+        "required": ["dimension", "severity", "message"],
+        "properties": {
+          "dimension": { "type": "string" },
+          "severity": {
+            "type": "string",
+            "enum": ["info", "note", "suggestion", "important"]
+          },
+          "message": { "type": "string" },
+          "proposedChange": {
+            "type": ["object", "null"],
+            "description": "Optional structured representation of a proposed change (e.g., new description, topic list, or README section)."
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
+
