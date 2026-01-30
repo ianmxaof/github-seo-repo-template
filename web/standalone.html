@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitHub Visibility Optimizer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --bg-tertiary: #21262d;
+      --bg-input: #0d1117;
+      --border: #30363d;
+      --border-focus: #58a6ff;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #6e7681;
+      --accent: #58a6ff;
+      --accent-hover: #79c0ff;
+      --success: #3fb950;
+      --warning: #d29922;
+      --error: #f85149;
+      --shadow: rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      height: 100vh;
+      gap: 1px;
+      background: var(--border);
+    }
+
+    /* Left Panel - Controls */
+    .controls {
+      background: var(--bg-secondary);
+      padding: 32px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      overflow-y: auto;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, var(--accent) 0%, #a371f7 100%);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    .logo-text {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 600;
+      font-size: 15px;
+      letter-spacing: -0.02em;
+    }
+
+    .logo-text span {
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .section {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .section-title {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .field-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .field-label .hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    input, select {
+      background: var(--bg-input);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      color: var(--text-primary);
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+    }
+
+    input::placeholder {
+      color: var(--text-muted);
+    }
+
+    input[type="password"] {
+      letter-spacing: 0.1em;
+    }
+
+    select {
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238b949e' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+
+    .checkbox-field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+
+    .checkbox-field input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: var(--accent);
+    }
+
+    .checkbox-field label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 12px 20px;
+      font-family: 'IBM Plex Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn:disabled {
+      background: var(--bg-tertiary);
+      color: var(--text-muted);
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--border);
+      color: var(--text-primary);
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid transparent;
+      border-top-color: currentColor;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .actions .btn {
+      flex: 1;
+    }
+
+    /* Right Panel - Results */
+    .results {
+      background: var(--bg-primary);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .results-header {
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .results-title {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .results-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .results-meta .stat {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .results-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px;
+    }
+
+    .empty-state {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      color: var(--text-muted);
+    }
+
+    .empty-state-icon {
+      width: 64px;
+      height: 64px;
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .empty-state-icon svg {
+      width: 28px;
+      height: 28px;
+      stroke: var(--text-muted);
+      fill: none;
+    }
+
+    .empty-state-text {
+      text-align: center;
+    }
+
+    .empty-state-text h3 {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .empty-state-text p {
+      font-size: 13px;
+    }
+
+    /* Markdown Rendering */
+    .markdown-body {
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .markdown-body h1 {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .markdown-body h2 {
+      font-size: 18px;
+      font-weight: 600;
+      margin-top: 32px;
+      margin-bottom: 12px;
+      color: var(--accent);
+    }
+
+    .markdown-body h3 {
+      font-size: 15px;
+      font-weight: 600;
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+
+    .markdown-body p {
+      margin-bottom: 12px;
+    }
+
+    .markdown-body ul, .markdown-body ol {
+      margin-bottom: 12px;
+      padding-left: 24px;
+    }
+
+    .markdown-body li {
+      margin-bottom: 6px;
+    }
+
+    .markdown-body code {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      background: var(--bg-tertiary);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .markdown-body pre {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      margin-bottom: 16px;
+    }
+
+    .markdown-body pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .markdown-body blockquote {
+      border-left: 3px solid var(--accent);
+      padding-left: 16px;
+      margin: 16px 0;
+      color: var(--text-secondary);
+    }
+
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 16px;
+    }
+
+    .markdown-body th, .markdown-body td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+    }
+
+    .markdown-body th {
+      background: var(--bg-secondary);
+      font-weight: 500;
+    }
+
+    .markdown-body hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+
+    /* Score badges in results */
+    .score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      font-weight: 500;
+    }
+
+    .score-high { background: rgba(63, 185, 80, 0.15); color: var(--success); }
+    .score-medium { background: rgba(210, 153, 34, 0.15); color: var(--warning); }
+    .score-low { background: rgba(248, 81, 73, 0.15); color: var(--error); }
+
+    /* Toast notifications */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      box-shadow: 0 8px 24px var(--shadow);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: transform 0.3s, opacity 0.3s;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success { border-color: var(--success); }
+    .toast.error { border-color: var(--error); }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+      }
+
+      .controls {
+        max-height: 50vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Left Panel: Controls -->
+    <div class="controls">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        </div>
+        <div class="logo-text">gh-visibility <span>optimizer</span></div>
+      </div>
+
+      <!-- Authentication -->
+      <div class="section">
+        <div class="section-title">Authentication</div>
+        
+        <div class="field">
+          <label class="field-label">GitHub PAT <span class="hint">(repo scope)</span></label>
+          <input type="password" id="pat" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+        </div>
+
+        <div class="field">
+          <label class="field-label">LLM API Key <span class="hint">(optional)</span></label>
+          <input type="password" id="llm-key" placeholder="sk-xxxxxxxxxxxx" autocomplete="off">
+        </div>
+
+        <div class="checkbox-field">
+          <input type="checkbox" id="save-tokens" checked>
+          <label for="save-tokens">Remember tokens locally</label>
+        </div>
+      </div>
+
+      <!-- Target -->
+      <div class="section">
+        <div class="section-title">Analysis Target</div>
+        
+        <div class="field">
+          <label class="field-label">GitHub Username</label>
+          <input type="text" id="username" placeholder="ianmxaof">
+        </div>
+
+        <div class="field">
+          <label class="field-label">Repository <span class="hint">(blank = all repos)</span></label>
+          <input type="text" id="repo" placeholder="Leave empty for full account">
+        </div>
+      </div>
+
+      <!-- Configuration -->
+      <div class="section">
+        <div class="section-title">Configuration</div>
+        
+        <div class="field">
+          <label class="field-label">Preset</label>
+          <select id="preset">
+            <option value="indie-hacker">Indie Hacker</option>
+            <option value="open-source-maintainer">Open Source Maintainer</option>
+            <option value="portfolio-dev" selected>Portfolio Developer</option>
+            <option value="enterprise-internal">Enterprise Internal</option>
+            <option value="technical-writer">Technical Writer</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label class="field-label">Output Mode</label>
+          <select id="mode">
+            <option value="suggest" selected>Analyze + Suggestions</option>
+            <option value="analyze">Analyze Only</option>
+          </select>
+        </div>
+
+        <div class="checkbox-field">
+          <input type="checkbox" id="ai-suggestions">
+          <label for="ai-suggestions">Enhance with AI suggestions</label>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="actions">
+        <button class="btn" id="analyze-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+          Analyze
+        </button>
+        <button class="btn btn-secondary" id="clear-btn">Clear</button>
+      </div>
+    </div>
+
+    <!-- Right Panel: Results -->
+    <div class="results">
+      <div class="results-header">
+        <div class="results-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/>
+            <path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+          </svg>
+          Analysis Report
+        </div>
+        <div class="results-meta" id="results-meta" style="display: none;">
+          <span class="stat" id="repo-count"></span>
+          <span class="stat" id="analysis-time"></span>
+        </div>
+      </div>
+
+      <div class="results-content" id="results-content">
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <svg viewBox="0 0 24 24" stroke-width="1.5">
+              <path d="M9 17H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-4"/>
+              <path d="M12 15l-3 6h6l-3-6z"/>
+            </svg>
+          </div>
+          <div class="empty-state-text">
+            <h3>No analysis yet</h3>
+            <p>Enter your credentials and click Analyze to get started</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // DOM Elements
+    const elements = {
+      pat: document.getElementById('pat'),
+      llmKey: document.getElementById('llm-key'),
+      saveTokens: document.getElementById('save-tokens'),
+      username: document.getElementById('username'),
+      repo: document.getElementById('repo'),
+      preset: document.getElementById('preset'),
+      mode: document.getElementById('mode'),
+      aiSuggestions: document.getElementById('ai-suggestions'),
+      analyzeBtn: document.getElementById('analyze-btn'),
+      clearBtn: document.getElementById('clear-btn'),
+      resultsContent: document.getElementById('results-content'),
+      resultsMeta: document.getElementById('results-meta'),
+      repoCount: document.getElementById('repo-count'),
+      analysisTime: document.getElementById('analysis-time'),
+      toast: document.getElementById('toast')
+    };
+
+    // State
+    let isAnalyzing = false;
+
+    // Initialize
+    function init() {
+      loadSavedTokens();
+      setupEventListeners();
+    }
+
+    function loadSavedTokens() {
+      const savedPat = localStorage.getItem('gh-visibility-pat');
+      const savedLlmKey = localStorage.getItem('gh-visibility-llm-key');
+      const savedUsername = localStorage.getItem('gh-visibility-username');
+      
+      if (savedPat) elements.pat.value = savedPat;
+      if (savedLlmKey) elements.llmKey.value = savedLlmKey;
+      if (savedUsername) elements.username.value = savedUsername;
+    }
+
+    function saveTokens() {
+      if (elements.saveTokens.checked) {
+        localStorage.setItem('gh-visibility-pat', elements.pat.value);
+        localStorage.setItem('gh-visibility-llm-key', elements.llmKey.value);
+        localStorage.setItem('gh-visibility-username', elements.username.value);
+      }
+    }
+
+    function setupEventListeners() {
+      elements.analyzeBtn.addEventListener('click', runAnalysis);
+      elements.clearBtn.addEventListener('click', clearResults);
+      
+      // Enable AI suggestions only if LLM key is provided
+      elements.llmKey.addEventListener('input', () => {
+        elements.aiSuggestions.disabled = !elements.llmKey.value;
+        if (!elements.llmKey.value) elements.aiSuggestions.checked = false;
+      });
+
+      // Enter key triggers analysis
+      [elements.pat, elements.username, elements.repo].forEach(el => {
+        el.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') runAnalysis();
+        });
+      });
+    }
+
+    function showToast(message, type = 'info') {
+      elements.toast.textContent = message;
+      elements.toast.className = `toast ${type} show`;
+      setTimeout(() => {
+        elements.toast.classList.remove('show');
+      }, 3000);
+    }
+
+    function setLoading(loading) {
+      isAnalyzing = loading;
+      elements.analyzeBtn.disabled = loading;
+      elements.analyzeBtn.innerHTML = loading
+        ? '<div class="spinner"></div> Analyzing...'
+        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg> Analyze';
+    }
+
+    async function runAnalysis() {
+      if (isAnalyzing) return;
+
+      const pat = elements.pat.value.trim();
+      const username = elements.username.value.trim();
+
+      if (!pat) {
+        showToast('GitHub PAT is required', 'error');
+        elements.pat.focus();
+        return;
+      }
+
+      if (!username) {
+        showToast('GitHub username is required', 'error');
+        elements.username.focus();
+        return;
+      }
+
+      saveTokens();
+      setLoading(true);
+
+      const startTime = Date.now();
+
+      try {
+        // Fetch repos
+        const repos = await fetchRepos(pat, username, elements.repo.value.trim());
+        
+        if (repos.length === 0) {
+          showToast('No repositories found', 'error');
+          setLoading(false);
+          return;
+        }
+
+        // Analyze repos
+        const analysis = await analyzeRepos(repos, pat, elements.preset.value);
+        
+        // Generate suggestions if mode is suggest
+        if (elements.mode.value === 'suggest') {
+          await generateSuggestions(analysis, elements.preset.value);
+        }
+
+        // Enhance with AI if enabled
+        if (elements.aiSuggestions.checked && elements.llmKey.value) {
+          await enhanceWithAI(analysis, elements.llmKey.value, elements.preset.value);
+        }
+
+        // Render results
+        const markdown = generateMarkdownReport(analysis, username, elements.preset.value);
+        renderResults(markdown, repos.length, Date.now() - startTime);
+
+        showToast(`Analyzed ${repos.length} repositories`, 'success');
+      } catch (error) {
+        console.error(error);
+        showToast(error.message || 'Analysis failed', 'error');
+      }
+
+      setLoading(false);
+    }
+
+    async function fetchRepos(pat, username, specificRepo) {
+      const headers = {
+        'Authorization': `Bearer ${pat}`,
+        'Accept': 'application/vnd.github.v3+json'
+      };
+
+      if (specificRepo) {
+        const response = await fetch(`https://api.github.com/repos/${username}/${specificRepo}`, { headers });
+        if (!response.ok) {
+          const errBody = await response.json().catch(() => ({}));
+          const msg = errBody.message || response.statusText || 'Not found';
+          throw new Error(msg + ' (' + response.status + ')');
+        }
+        const repo = await response.json();
+        return [repo];
+      }
+
+      // Fetch all repos with pagination
+      let repos = [];
+      let page = 1;
+      while (true) {
+        const response = await fetch(
+          `https://api.github.com/users/${username}/repos?per_page=100&page=${page}`,
+          { headers }
+        );
+        if (!response.ok) {
+          const errBody = await response.json().catch(() => ({}));
+          const msg = errBody.message || 'Failed to fetch repositories';
+          throw new Error(msg + (response.status ? ' (' + response.status + ')' : ''));
+        }
+        const data = await response.json();
+        if (data.length === 0) break;
+        repos = repos.concat(data);
+        page++;
+      }
+      return repos;
+    }
+
+    async function analyzeRepos(repos, pat, preset) {
+      const headers = {
+        'Authorization': `Bearer ${pat}`,
+        'Accept': 'application/vnd.github.v3+json'
+      };
+
+      const analysis = [];
+
+      for (const repo of repos) {
+        // Fetch README
+        let readme = null;
+        try {
+          const readmeResponse = await fetch(
+            `https://api.github.com/repos/${repo.full_name}/readme`,
+            { headers }
+          );
+          if (readmeResponse.ok) {
+            const readmeData = await readmeResponse.json();
+            readme = atob(readmeData.content);
+          }
+        } catch (e) {
+          // No README
+        }
+
+        // Score the repo
+        const scores = scoreRepo(repo, readme, preset);
+        
+        analysis.push({
+          name: repo.name,
+          full_name: repo.full_name,
+          description: repo.description,
+          topics: repo.topics || [],
+          html_url: repo.html_url,
+          stars: repo.stargazers_count,
+          forks: repo.forks_count,
+          pushed_at: repo.pushed_at,
+          has_readme: !!readme,
+          readme_length: readme ? readme.length : 0,
+          scores,
+          suggestions: []
+        });
+      }
+
+      return analysis;
+    }
+
+    function scoreRepo(repo, readme, preset) {
+      const scores = {
+        nameClarity: 0,
+        descriptionQuality: 0,
+        topicCoverage: 0,
+        readmeStructure: 0,
+        activityRecency: 0,
+        metadataHygiene: 0,
+        overall: 0
+      };
+
+      // Name clarity (simple heuristics)
+      const name = repo.name || '';
+      if (name.length >= 3 && name.length <= 50) scores.nameClarity += 40;
+      if (!name.includes('test') && !name.includes('temp')) scores.nameClarity += 30;
+      if (/^[a-z0-9-]+$/.test(name)) scores.nameClarity += 30;
+
+      // Description quality
+      const desc = repo.description || '';
+      if (desc.length > 0) scores.descriptionQuality += 30;
+      if (desc.length >= 20) scores.descriptionQuality += 20;
+      if (desc.length >= 50 && desc.length <= 200) scores.descriptionQuality += 30;
+      if (/[A-Z]/.test(desc[0])) scores.descriptionQuality += 10;
+      if (/[.!]$/.test(desc)) scores.descriptionQuality += 10;
+
+      // Topic coverage
+      const topics = repo.topics || [];
+      if (topics.length > 0) scores.topicCoverage += 30;
+      if (topics.length >= 3) scores.topicCoverage += 30;
+      if (topics.length >= 5) scores.topicCoverage += 20;
+      if (topics.length <= 10) scores.topicCoverage += 20;
+
+      // README structure
+      if (readme) {
+        scores.readmeStructure += 30;
+        if (readme.includes('# ')) scores.readmeStructure += 20;
+        if (readme.includes('## ')) scores.readmeStructure += 15;
+        if (readme.length > 500) scores.readmeStructure += 15;
+        if (/install|usage|getting started/i.test(readme)) scores.readmeStructure += 20;
+      }
+
+      // Activity recency
+      const daysSincePush = (Date.now() - new Date(repo.pushed_at)) / (1000 * 60 * 60 * 24);
+      if (daysSincePush < 30) scores.activityRecency = 100;
+      else if (daysSincePush < 90) scores.activityRecency = 80;
+      else if (daysSincePush < 180) scores.activityRecency = 60;
+      else if (daysSincePush < 365) scores.activityRecency = 40;
+      else scores.activityRecency = 20;
+
+      // Metadata hygiene
+      if (repo.description) scores.metadataHygiene += 25;
+      if (repo.homepage) scores.metadataHygiene += 25;
+      if ((repo.topics || []).length > 0) scores.metadataHygiene += 25;
+      if (!repo.archived) scores.metadataHygiene += 25;
+
+      // Overall (weighted)
+      scores.overall = Math.round(
+        scores.nameClarity * 0.1 +
+        scores.descriptionQuality * 0.2 +
+        scores.topicCoverage * 0.2 +
+        scores.readmeStructure * 0.25 +
+        scores.activityRecency * 0.1 +
+        scores.metadataHygiene * 0.15
+      );
+
+      return scores;
+    }
+
+    async function generateSuggestions(analysis, preset) {
+      for (const repo of analysis) {
+        const suggestions = [];
+
+        if (repo.scores.descriptionQuality < 60) {
+          suggestions.push({
+            dimension: 'description',
+            message: repo.description 
+              ? 'Consider expanding your description to 50-150 characters with clear value proposition'
+              : 'Add a description explaining what this project does and who it\'s for'
+          });
+        }
+
+        if (repo.scores.topicCoverage < 60) {
+          suggestions.push({
+            dimension: 'topics',
+            message: `Add relevant topic tags (aim for 3-5). Consider: technology stack, use case, domain`
+          });
+        }
+
+        if (repo.scores.readmeStructure < 60) {
+          if (!repo.has_readme) {
+            suggestions.push({
+              dimension: 'readme',
+              message: 'Create a README.md with at minimum: title, description, and basic usage'
+            });
+          } else {
+            suggestions.push({
+              dimension: 'readme',
+              message: 'Enhance README structure: add clear sections for Installation, Usage, and Examples'
+            });
+          }
+        }
+
+        if (repo.scores.nameClarity < 70) {
+          suggestions.push({
+            dimension: 'name',
+            message: 'Consider a more descriptive name using lowercase and hyphens (e.g., my-awesome-tool)'
+          });
+        }
+
+        repo.suggestions = suggestions;
+      }
+    }
+
+    async function enhanceWithAI(analysis, apiKey, preset) {
+      // Find repos that need the most help
+      const needsHelp = analysis
+        .filter(r => r.scores.overall < 70)
+        .slice(0, 5); // Limit API calls
+
+      for (const repo of needsHelp) {
+        try {
+          const prompt = `You are a GitHub SEO expert. Analyze this repository and provide specific, actionable suggestions.
+
+Repository: ${repo.name}
+Description: ${repo.description || 'None'}
+Topics: ${repo.topics.join(', ') || 'None'}
+Has README: ${repo.has_readme}
+Preset style: ${preset}
+
+Provide 2-3 specific suggestions to improve this repo's discoverability and presentation. Be concise and actionable.`;
+
+          const response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'x-api-key': apiKey,
+              'anthropic-version': '2023-06-01',
+              'anthropic-dangerous-direct-browser-access': 'true'
+            },
+            body: JSON.stringify({
+              model: 'claude-sonnet-4-20250514',
+              max_tokens: 300,
+              messages: [{ role: 'user', content: prompt }]
+            })
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            const aiText = data.content[0].text;
+            repo.aiSuggestions = aiText;
+          }
+        } catch (e) {
+          console.warn('AI enhancement failed for', repo.name, e);
+        }
+      }
+    }
+
+    function generateMarkdownReport(analysis, username, preset) {
+      const timestamp = new Date().toLocaleString();
+      const avgScore = Math.round(analysis.reduce((sum, r) => sum + r.scores.overall, 0) / analysis.length);
+      
+      let md = `# GitHub Visibility Report
+
+**Account:** [@${username}](https://github.com/${username})  
+**Preset:** ${preset}  
+**Generated:** ${timestamp}  
+**Repositories Analyzed:** ${analysis.length}  
+**Average Score:** ${avgScore}/100
+
+---
+
+## Summary
+
+`;
+
+      // Score distribution
+      const high = analysis.filter(r => r.scores.overall >= 70).length;
+      const medium = analysis.filter(r => r.scores.overall >= 40 && r.scores.overall < 70).length;
+      const low = analysis.filter(r => r.scores.overall < 40).length;
+
+      md += `| Score Range | Count |
+|-------------|-------|
+| 🟢 High (70+) | ${high} |
+| 🟡 Medium (40-69) | ${medium} |
+| 🔴 Low (<40) | ${low} |
+
+---
+
+## Repository Details
+
+`;
+
+      // Sort by score (lowest first to prioritize improvements)
+      const sorted = [...analysis].sort((a, b) => a.scores.overall - b.scores.overall);
+
+      for (const repo of sorted) {
+        const scoreEmoji = repo.scores.overall >= 70 ? '🟢' : repo.scores.overall >= 40 ? '🟡' : '🔴';
+        
+        md += `### ${scoreEmoji} [${repo.name}](${repo.html_url})
+
+**Overall Score:** ${repo.scores.overall}/100
+
+| Dimension | Score |
+|-----------|-------|
+| Name Clarity | ${repo.scores.nameClarity} |
+| Description | ${repo.scores.descriptionQuality} |
+| Topics | ${repo.scores.topicCoverage} |
+| README | ${repo.scores.readmeStructure} |
+| Activity | ${repo.scores.activityRecency} |
+| Metadata | ${repo.scores.metadataHygiene} |
+
+`;
+
+        if (repo.suggestions.length > 0) {
+          md += `**Suggestions:**\n`;
+          for (const s of repo.suggestions) {
+            md += `- **${s.dimension}:** ${s.message}\n`;
+          }
+          md += '\n';
+        }
+
+        if (repo.aiSuggestions) {
+          md += `**AI Analysis:**\n\n${repo.aiSuggestions}\n\n`;
+        }
+
+        md += `---\n\n`;
+      }
+
+      return md;
+    }
+
+    function renderResults(markdown, repoCount, timeMs) {
+      elements.resultsContent.innerHTML = `<div class="markdown-body">${marked.parse(markdown)}</div>`;
+      elements.resultsMeta.style.display = 'flex';
+      elements.repoCount.textContent = `${repoCount} repos`;
+      elements.analysisTime.textContent = `${(timeMs / 1000).toFixed(1)}s`;
+    }
+
+    function clearResults() {
+      elements.resultsContent.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <svg viewBox="0 0 24 24" stroke-width="1.5">
+              <path d="M9 17H5a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-4"/>
+              <path d="M12 15l-3 6h6l-3-6z"/>
+            </svg>
+          </div>
+          <div class="empty-state-text">
+            <h3>No analysis yet</h3>
+            <p>Enter your credentials and click Analyze to get started</p>
+          </div>
+        </div>
+      `;
+      elements.resultsMeta.style.display = 'none';
+    }
+
+    // Initialize on load
+    init();
+  </script>
+</body>
+</html>

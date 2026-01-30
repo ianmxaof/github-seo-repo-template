@@ -37,7 +37,7 @@ See `PRODUCT_INTENT.md` for the detailed product definition and `RULES.md` for h
 
 ### Dashboard (optional)
 
-A read-only web view is in `web/index.html`. Run the CLI with `--output json`, save the output to a file, then open the HTML file and paste the JSON to view scores and suggestions in the browser. No server or GitHub auth in the browser.
+A read-only web view is in `web/index.html`. Run the CLI with `--output json`, save the output to a file, then open the HTML file and paste the JSON to view scores and suggestions in the browser. No server or GitHub auth in the browser. For the standalone dashboard and Tauri build instructions, see [web/README.md](web/README.md).
 
 ### Configuration (PAT-based auth)
 
