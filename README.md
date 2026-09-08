@@ -30,8 +30,11 @@ This repository contains a **concrete product** and a **reusable template**:
 2. Export it in your shell: `export GITHUB_TOKEN=ghp_xxx` (or use `--token`)
 3. Run the CLI:
    - `gh-visibility scan --user your-username --preset indie-hacker --output table`
+   - **No token:** `gh-visibility sentry --readme README.md --name your-repo` scores a local README, extracts keywords, and drafts three GitHub About lines (≤160 chars). Never writes to GitHub.
 4. Inspect the scores and explanations per repository
 5. Manually apply any improvements you agree with
+
+Cursor skill: `.cursor/skills/github-seo-sentry/SKILL.md` (copy to `~/.cursor/skills/github-seo-sentry/` for all workspaces). GitHub Action: `.github/workflows/seo-sentry.yml` (job summary on README push; reusable via `workflow_call`).
 
 See `PRODUCT_INTENT.md` for the detailed product definition and `RULES.md` for hard scope constraints.
 
@@ -134,6 +137,7 @@ The `.github/` directory includes:
 
 Workflows are provided as templates that you can enable or customize:
 
+- `seo-sentry.yml` - Scores README, lists keywords, drafts 3 About lines into the Actions job summary (no repo writes)
 - `validate-readme.yml` - Checks README structure and required sections
 - `lint-metadata.yml` - Validates repository topics and description
 
