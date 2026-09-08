@@ -1,0 +1,90 @@
+name: SEO sentry
+
+# Scores README + drafts GitHub About copy. Advisory only — never commits or
+# edits repository description/topics.
+on:
+  push:
+    paths:
+      - "README.md"
+      - "docs/**"
+      - ".github/workflows/seo-sentry.yml"
+  pull_request:
+    paths:
+      - "README.md"
+  workflow_dispatch:
+    inputs:
+      readme:
+        description: Path to README.md
+        type: string
+        default: README.md
+      name:
+        description: Repository name (GitHub About)
+        type: string
+        default: ""
+      fail_under:
+        description: Fail the job if overall score is below this (0 = never fail)
+        type: string
+        default: "0"
+  workflow_call:
+    inputs:
+      readme:
+        description: Path to README.md
+        type: string
+        required: false
+        default: README.md
+      name:
+        description: Repository name (GitHub About)
+        type: string
+        required: false
+        default: ""
+      fail_under:
+        description: Fail the job if overall score is below this (0 = never fail)
+        type: string
+        required: false
+        default: "0"
+      tool_repository:
+        description: Repo that contains gh-visibility (for callers that are not this template)
+        type: string
+        required: false
+        default: ianmxaof/github-seo-repo-template
+
+jobs:
+  sentry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Checkout gh-visibility (when this repo is not the tool)
+        if: ${{ github.repository != (inputs.tool_repository || 'ianmxaof/github-seo-repo-template') }}
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.tool_repository || 'ianmxaof/github-seo-repo-template' }}
+          path: .gh-visibility-src
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install gh-visibility
+        run: |
+          python -m pip install --upgrade pip
+          if [ -d .gh-visibility-src ]; then
+            pip install -e "./.gh-visibility-src[dev]"
+          else
+            pip install -e ".[dev]"
+          fi
+
+      - name: Run SEO sentry
+        env:
+          README_PATH: ${{ inputs.readme || 'README.md' }}
+          REPO_NAME: ${{ inputs.name || github.event.repository.name }}
+          FAIL_UNDER: ${{ inputs.fail_under || '0' }}
+        run: |
+          gh-visibility sentry \
+            --readme "$README_PATH" \
+            --name "$REPO_NAME" \
+            --output markdown \
+            --github-summary \
+            --fail-under "$FAIL_UNDER"

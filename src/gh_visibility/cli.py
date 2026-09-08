@@ -83,6 +83,52 @@ def build_parser() -> argparse.ArgumentParser:
     help="When used with --mode suggest, add optional LLM-generated suggestions (requires FRONTIER_LLM_API_KEY or OPENAI_API_KEY)."
   )
 
+  sentry = subparsers.add_parser(
+    "sentry",
+    help="Score a local README (no GitHub API). Keywords + 3 About-line drafts. Never mutates repos.",
+  )
+  sentry.add_argument(
+    "--readme",
+    default="README.md",
+    help="Path to README.md (default: README.md).",
+  )
+  sentry.add_argument(
+    "--name",
+    help="Repository name (default: README parent directory name).",
+  )
+  sentry.add_argument(
+    "--description",
+    default="",
+    help="Current GitHub About description, if any.",
+  )
+  sentry.add_argument(
+    "--topics",
+    default="",
+    help="Comma-separated current GitHub topics.",
+  )
+  sentry.add_argument(
+    "--preset",
+    default="indie-hacker",
+    help="Presentation preset id (default: indie-hacker).",
+  )
+  sentry.add_argument(
+    "--output",
+    choices=["json", "markdown"],
+    default="markdown",
+    help="Output format (default: markdown).",
+  )
+  sentry.add_argument(
+    "--fail-under",
+    type=float,
+    default=0.0,
+    help="Exit 1 if overall score is below this (default: 0, never fail CI).",
+  )
+  sentry.add_argument(
+    "--github-summary",
+    action="store_true",
+    help="Append the markdown report to $GITHUB_STEP_SUMMARY when set.",
+  )
+
   return parser
 
 
@@ -93,6 +139,32 @@ def resolve_token(explicit: Optional[str]) -> str:
       "No GitHub token provided. Set GITHUB_TOKEN env var or pass --token."
     )
   return token
+
+
+def cmd_sentry(args: argparse.Namespace) -> int:
+  from .sentry import dump_json, maybe_write_github_summary, render_github_summary, run_sentry_from_paths
+
+  readme = Path(args.readme)
+  if not readme.is_file():
+    raise SystemExit(f"README not found: {readme}")
+  topics = [t.strip() for t in (args.topics or "").split(",") if t.strip()]
+  report = run_sentry_from_paths(
+    readme,
+    name=args.name,
+    description=args.description or "",
+    topics=topics or None,
+    preset_id=args.preset,
+  )
+  if args.output == "json":
+    dump_json(report, sys.stdout)
+  else:
+    render_github_summary(report, sys.stdout)
+  if args.github_summary:
+    maybe_write_github_summary(report)
+  threshold = float(args.fail_under or 0)
+  if threshold > 0 and float(report.get("overall") or 0) < threshold:
+    return 1
+  return 0
 
 
 def cmd_scan(args: argparse.Namespace) -> int:
@@ -169,6 +241,8 @@ def main(argv: Optional[list[str]] = None) -> int:
 
   if args.command == "scan":
     return cmd_scan(args)
+  if args.command == "sentry":
+    return cmd_sentry(args)
 
   parser.error(f"Unknown command: {args.command}")
   return 1
