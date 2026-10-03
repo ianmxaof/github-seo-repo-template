@@ -1,6 +1,7 @@
 """
-Thin FastAPI backend for gh-visibility: runs the same scan as the CLI.
-PAT is used only for the request and never logged or persisted.
+Thin FastAPI backend for gh-visibility: onboarding auth + same scan as the CLI.
+
+OAuth client secrets and user tokens stay on this process; never returned to the UI.
 """
 
 from __future__ import annotations
@@ -14,12 +15,14 @@ sys.path.insert(0, str(REPO_ROOT / "src"))
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
 from gh_visibility.analyzer import Analyzer
 from gh_visibility.github_client import GitHubClient
 from gh_visibility.presets import load_preset
 
+import auth_session
 from store import get_history, save_scan
 
 app = FastAPI(title="GitHub Account Presentation Optimizer API")
@@ -34,22 +37,110 @@ app.add_middleware(
 
 
 class ScanRequest(BaseModel):
-  username: str
-  token: str
+  username: str | None = None
+  token: str | None = None
   preset: str = "indie-hacker"
-  preset_payload: dict | None = None  # If set, use instead of loading preset by id
+  preset_payload: dict | None = None
   repo: str | None = None
   mode: str = "suggest"
   benchmark: str = "none"
   use_llm: bool = False
-  llm_api_key: str | None = None  # Optional; if not set, backend uses env FRONTIER_LLM_API_KEY / OPENAI_API_KEY
+  llm_api_key: str | None = None
+
+
+class PatRequest(BaseModel):
+  token: str
+
+
+def _resolve_credentials(req: ScanRequest) -> tuple[str, str]:
+  """Return (username, token). Prefer explicit request fields; else session."""
+  session = auth_session.get_session()
+  token = (req.token or "").strip() or (session.token if session else "")
+  username = (req.username or "").strip() or (session.username if session else "")
+  if not token:
+    raise HTTPException(
+      status_code=401,
+      detail="Not connected. Complete Connect GitHub (device flow or PAT) first.",
+    )
+  if not username:
+    raise HTTPException(status_code=400, detail="Username is required.")
+  return username, token
+
+
+@app.on_event("startup")
+def _load_session() -> None:
+  auth_session.load_persisted()
+
+
+@app.get("/health")
+def health():
+  return {"status": "ok", "oauth_configured": auth_session.oauth_configured()}
+
+
+@app.get("/auth/me")
+def auth_me():
+  return auth_session.me_payload()
+
+
+@app.post("/auth/pat")
+def auth_pat(req: PatRequest):
+  try:
+    session = auth_session.connect_with_pat(req.token)
+  except ValueError as e:
+    raise HTTPException(status_code=400, detail=str(e))
+  except PermissionError as e:
+    raise HTTPException(status_code=401, detail=str(e))
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=str(e))
+  return {
+    "connected": True,
+    "username": session.username,
+    "avatar_url": session.avatar_url,
+    "login_method": session.login_method,
+  }
+
+
+@app.post("/auth/device/start")
+def auth_device_start():
+  if not auth_session.oauth_configured():
+    raise HTTPException(
+      status_code=503,
+      detail=(
+        "Device flow is not configured on this install "
+        "(set GH_OAUTH_CLIENT_ID and GH_OAUTH_CLIENT_SECRET). "
+        "Use a personal access token instead."
+      ),
+    )
+  try:
+    return auth_session.start_device_flow()
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/auth/device/poll")
+def auth_device_poll(poll_id: str):
+  if not poll_id:
+    raise HTTPException(status_code=400, detail="poll_id required")
+  try:
+    return auth_session.poll_device_flow(poll_id)
+  except PermissionError as e:
+    raise HTTPException(status_code=401, detail=str(e))
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.delete("/auth/session")
+def auth_disconnect():
+  auth_session.clear_session()
+  return {"connected": False}
 
 
 @app.post("/scan")
 def run_scan(req: ScanRequest):
-  """Run the same scan as the CLI. Token is used only for this request and discarded."""
+  """Run the same scan as the CLI. Prefer session token; never log the token."""
   try:
-    client = GitHubClient(token=req.token)
+    username, token = _resolve_credentials(req)
+    client = GitHubClient(token=token)
     if req.preset_payload and isinstance(req.preset_payload, dict):
       preset = req.preset_payload
       if "id" not in preset:
@@ -60,13 +151,13 @@ def run_scan(req: ScanRequest):
     analyzer = Analyzer(rubric_path=rubric_path, preset=preset)
     evaluations = analyzer.evaluate_account(
       client=client,
-      username=req.username,
+      username=username,
       repo_filter=req.repo,
       benchmark_mode=req.benchmark,
       mode=req.mode,
     )
     try:
-      save_scan(req.username, req.preset, evaluations)
+      save_scan(username, req.preset, evaluations)
     except Exception:
       pass
     if req.use_llm and req.mode == "suggest":
@@ -83,7 +174,13 @@ def run_scan(req: ScanRequest):
             api_key=api_key,
           )
           ev["suggestions"].extend(extra)
-    return evaluations
+    return {
+      "username": username,
+      "preset": req.preset,
+      "evaluations": evaluations,
+    }
+  except HTTPException:
+    raise
   except FileNotFoundError as e:
     raise HTTPException(status_code=400, detail=str(e))
   except Exception as e:
@@ -92,35 +189,34 @@ def run_scan(req: ScanRequest):
 
 @app.get("/presets")
 def list_presets():
-  """Return list of preset ids (and optionally full JSON)."""
   presets_dir = REPO_ROOT / "presets"
   if not presets_dir.is_dir():
     return []
-  ids = []
-  for p in presets_dir.glob("*.json"):
-    ids.append(p.stem)
-  return sorted(ids)
+  return sorted(p.stem for p in presets_dir.glob("*.json"))
 
 
 @app.get("/presets/{preset_id}")
 def get_preset(preset_id: str):
-  """Return full preset JSON for a given id."""
   try:
-    preset = load_preset(preset_id, presets_dir=REPO_ROOT / "presets")
-    return preset
+    return load_preset(preset_id, presets_dir=REPO_ROOT / "presets")
   except FileNotFoundError:
     raise HTTPException(status_code=404, detail=f"Preset not found: {preset_id}")
 
 
 @app.get("/history")
 def history(username: str, limit: int = 20):
-  """Return last N scans for the given username."""
   try:
     return get_history(username, limit=min(limit, 100))
   except Exception as e:
     raise HTTPException(status_code=500, detail=str(e))
 
 
+# Serve wizard UI from the same origin as the API (zip / local launch)
+_web = REPO_ROOT / "web"
+if _web.is_dir():
+  app.mount("/ui", StaticFiles(directory=str(_web), html=True), name="ui")
+
+
 if __name__ == "__main__":
   import uvicorn
-  uvicorn.run(app, host="0.0.0.0", port=8000)
+  uvicorn.run(app, host="127.0.0.1", port=8000)

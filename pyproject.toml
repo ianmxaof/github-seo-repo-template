@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [
-  { name = "GitHub SEO Repository Template Contributors" }
+  { name = "Powercore", email = "hello@powercore.app" }
 ]
 dependencies = [
   "requests>=2.32.0",

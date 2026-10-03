@@ -39,6 +39,9 @@ dist/
 build/
 *.min.js
 *.min.css
+node_modules/
+src-tauri/target/
+src-tauri/gen/schemas/
 
 # Backend scan history (SQLite)
 backend/data/
@@ -52,3 +55,6 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 *.egg
+
+.ship-gate/
+

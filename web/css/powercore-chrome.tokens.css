@@ -1,0 +1,142 @@
+/**
+ * PowerCore Chrome — shared design tokens
+ * Aesthetic: sleek near-black chrome, micro density, white type,
+ * multi-chromatic accents used sparingly (focus / status / suite badges).
+ * Consume from desktop CSS, extension chrome, and map into Textual themes.
+ */
+:root {
+  /* Surfaces */
+  --pc-bg: #0a0a0b;
+  --pc-bg-elevated: #121214;
+  --pc-bg-overlay: #1a1a1e;
+  --pc-chrome: #2a2a30;
+  --pc-chrome-strong: #3d3d46;
+
+  /* Type */
+  --pc-fg: #f4f4f5;
+  --pc-fg-muted: #a1a1aa;
+  --pc-fg-subtle: #71717a;
+
+  /* Multi-chromatic accents (use one at a time in a region) */
+  --pc-accent-cyan: #22d3ee;
+  --pc-accent-violet: #a78bfa;
+  --pc-accent-amber: #fbbf24;
+  --pc-accent-rose: #fb7185;
+  --pc-accent-emerald: #34d399;
+  --pc-accent-focus: var(--pc-accent-cyan);
+
+  /* Semantic */
+  --pc-ok: var(--pc-accent-emerald);
+  --pc-warn: var(--pc-accent-amber);
+  --pc-danger: var(--pc-accent-rose);
+  --pc-info: var(--pc-accent-cyan);
+
+  /* Suite badge */
+  --pc-suite-badge-bg: color-mix(in srgb, var(--pc-accent-violet) 18%, var(--pc-bg-elevated));
+  --pc-suite-badge-fg: var(--pc-accent-violet);
+
+  /* Density — micro + rounded chrome (Cursor / ChatGPT — never DOS squares) */
+  --pc-space-1: 2px;
+  --pc-space-2: 4px;
+  --pc-space-3: 8px;
+  --pc-space-4: 12px;
+  --pc-space-5: 16px;
+  --pc-radius: 8px;
+  --pc-radius-chrome: 8px;
+  --pc-radius-panel: 10px;
+  --pc-radius-control: 8px;
+  --pc-border: 1px solid var(--pc-chrome);
+  --pc-font-ui: "Inter", "DM Sans", "Roboto", system-ui, sans-serif;
+  --pc-font-mono: "Cascadia Code", "JetBrains Mono", "IBM Plex Mono", "Consolas", monospace;
+  --pc-font-size-xs: 11px;
+  --pc-font-size-sm: 12px;
+  --pc-font-size-md: 13px;
+  --pc-line-tight: 1.25;
+
+  /* Scrollbars — thin dark thumb, no arrow buttons */
+  /* Contrast on both --pc-bg and --pc-bg-elevated (never equal elevated). */
+  --pc-scroll-track: #1a1a1e;
+  --pc-scroll-thumb: #3f3f46;
+  --pc-scroll-thumb-hover: #52525b;
+  --pc-scroll-width: 8px;
+
+  /* Dropdown / context menus — MUST match Hub tray ContextMenuStrip.
+     Never ship OS-native white Combobox / select popdowns in PowerCore products. */
+  --pc-menu-bg: var(--pc-bg-elevated);
+  --pc-menu-hover: #1a1f35;
+  --pc-menu-border: var(--pc-chrome);
+  --pc-menu-fg: var(--pc-fg);
+  --pc-menu-fg-active: var(--pc-accent-cyan);
+  --pc-menu-section-owned: var(--pc-accent-violet);
+  --pc-menu-section-catalog: var(--pc-accent-cyan);
+  --pc-menu-font: var(--pc-font-ui);
+  --pc-menu-font-size: var(--pc-font-size-sm);
+  --pc-menu-radius: 0; /* Hub uses sharp corners */
+
+  /* Motion */
+  --pc-motion-fast: 120ms;
+  --pc-motion-med: 200ms;
+}
+
+/* Utility sketch — optional classes for web shells */
+.pc-shell {
+  background: var(--pc-bg);
+  color: var(--pc-fg);
+  font-family: var(--pc-font-ui);
+  font-size: var(--pc-font-size-md);
+  line-height: var(--pc-line-tight);
+}
+
+.pc-chrome-panel {
+  background: var(--pc-bg-elevated);
+  border: var(--pc-border);
+  border-radius: var(--pc-radius-panel);
+  padding: var(--pc-space-3);
+}
+
+/* Thin dark scrollbar (WebKit) — match Cursor / ChatGPT */
+.pc-shell *::-webkit-scrollbar {
+  width: var(--pc-scroll-width);
+  height: var(--pc-scroll-width);
+}
+.pc-shell *::-webkit-scrollbar-track {
+  background: var(--pc-scroll-track);
+}
+.pc-shell *::-webkit-scrollbar-thumb {
+  background: var(--pc-scroll-thumb);
+  border-radius: 999px;
+}
+.pc-shell *::-webkit-scrollbar-thumb:hover {
+  background: var(--pc-scroll-thumb-hover);
+}
+.pc-shell {
+  scrollbar-width: thin;
+  scrollbar-color: var(--pc-scroll-thumb) var(--pc-scroll-track);
+}
+
+.pc-suite-badge {
+  display: inline-block;
+  background: var(--pc-suite-badge-bg);
+  color: var(--pc-suite-badge-fg);
+  font-size: var(--pc-font-size-xs);
+  padding: var(--pc-space-1) var(--pc-space-2);
+  border-radius: var(--pc-radius);
+}
+
+/* Hub-matched select / menu popover (web shells) */
+.pc-chrome-menu {
+  background: var(--pc-menu-bg);
+  color: var(--pc-menu-fg);
+  border: 1px solid var(--pc-menu-border);
+  border-radius: var(--pc-menu-radius);
+  font-family: var(--pc-menu-font);
+  font-size: var(--pc-menu-font-size);
+  padding: var(--pc-space-1) 0;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.pc-chrome-menu [role="option"]:hover,
+.pc-chrome-menu [data-hover="1"] {
+  background: var(--pc-menu-hover);
+  color: var(--pc-menu-fg-active);
+}

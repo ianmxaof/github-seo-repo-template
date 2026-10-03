@@ -1,0 +1,326 @@
+{
+  "github-seo-repo-template": {
+    "source": "C:\\Powercore-repo-main\\github-seo-repo-template\\README.md",
+    "overall": 59.7,
+    "keywords": [
+      "github",
+      "template",
+      "account",
+      "structure",
+      "optimizer",
+      "presentation",
+      "analyzer",
+      "auth",
+      "authors",
+      "best",
+      "configuration",
+      "contributing"
+    ],
+    "description_variants": [
+      "A CLI-first GitHub Account Presentation Optimizer that analyzes all repositories in a GitHub account and scores how clearly they present themselves to humans\u2026",
+      "GitHub Account Presentation Optimizer Template: A CLI-first GitHub Account Presentation Optimizer that analyzes all repositories in a GitHub account and\u2026",
+      "github \u00b7 template \u00b7 account \u00b7 structure \u2014 A CLI-first GitHub Account Presentation Optimizer that analyzes all repositories in a GitHub account and scores how\u2026"
+    ],
+    "topic_ideas": [
+      "github",
+      "template",
+      "account",
+      "structure",
+      "optimizer",
+      "presentation",
+      "analyzer",
+      "auth",
+      "authors",
+      "best",
+      "configuration",
+      "contributing"
+    ],
+    "gaps": [
+      {
+        "dimension": "descriptionQuality",
+        "severity": "important",
+        "message": "Add a short description (what it does, who it's for, platform). Aim for 60\u2013160 characters."
+      },
+      {
+        "dimension": "topicCoverage",
+        "severity": "important",
+        "message": "Add GitHub topics (technology, use case, platform). This preset recommends at least 5 topics."
+      },
+      {
+        "dimension": "metadataHygiene",
+        "severity": "suggestion",
+        "message": "Improve metadata: add or refine description, topics, and README so the repo looks complete and maintainable."
+      }
+    ]
+  },
+  "TBCC-Telegram-Bot-Command-Center": {
+    "source": "C:\\Powercore-repo-main\\telegram_bot2\\README.md",
+    "overall": 59.7,
+    "keywords": [
+      "hub",
+      "storage",
+      "tbcc",
+      "telegram",
+      "public",
+      "actually",
+      "app",
+      "architecture",
+      "backend",
+      "bot",
+      "center",
+      "command"
+    ],
+    "description_variants": [
+      "A self-hosted platform for running a media-driven Telegram creator network end to end: ingest from browser + storage daemons, dedupe and tag media, route it\u2026",
+      "TBCC \u2014 Telegram Bot Command Center: A self-hosted platform for running a media-driven Telegram creator network end to end: ingest from browser + storage\u2026",
+      "hub \u00b7 storage \u00b7 tbcc \u00b7 telegram \u2014 A self-hosted platform for running a media-driven Telegram creator network end to end: ingest from browser + storage\u2026"
+    ],
+    "topic_ideas": [
+      "hub",
+      "storage",
+      "tbcc",
+      "telegram",
+      "public",
+      "actually",
+      "app",
+      "architecture",
+      "backend",
+      "bot",
+      "center",
+      "command"
+    ],
+    "gaps": [
+      {
+        "dimension": "descriptionQuality",
+        "severity": "important",
+        "message": "Add a short description (what it does, who it's for, platform). Aim for 60\u2013160 characters."
+      },
+      {
+        "dimension": "topicCoverage",
+        "severity": "important",
+        "message": "Add GitHub topics (technology, use case, platform). This preset recommends at least 5 topics."
+      },
+      {
+        "dimension": "metadataHygiene",
+        "severity": "suggestion",
+        "message": "Improve metadata: add or refine description, topics, and README so the repo looks complete and maintainable."
+      }
+    ]
+  },
+  "openclaw-orchestration": {
+    "source": "C:\\Powercore-repo-main\\openclaw-orchestration\\README.md",
+    "overall": 56.7,
+    "keywords": [
+      "orchestration",
+      "controls",
+      "openclaw",
+      "phases",
+      "risk",
+      "structure",
+      "agents",
+      "host",
+      "module",
+      "openclaw-orchestration",
+      "resume-tailoring",
+      "swappable"
+    ],
+    "description_variants": [
+      "Orchestration host with resume-tailoring module and swappable agents.",
+      "OpenClaw Orchestration: Orchestration host with resume-tailoring module and swappable agents.",
+      "orchestration \u00b7 controls \u00b7 openclaw \u00b7 phases \u2014 Orchestration host with resume-tailoring module and swappable agents."
+    ],
+    "topic_ideas": [
+      "orchestration",
+      "controls",
+      "openclaw",
+      "phases",
+      "risk",
+      "structure",
+      "agents",
+      "host",
+      "module",
+      "openclaw-orchestration",
+      "resume-tailoring",
+      "swappable"
+    ],
+    "gaps": [
+      {
+        "dimension": "descriptionQuality",
+        "severity": "important",
+        "message": "Add a short description (what it does, who it's for, platform). Aim for 60\u2013160 characters."
+      },
+      {
+        "dimension": "topicCoverage",
+        "severity": "important",
+        "message": "Add GitHub topics (technology, use case, platform). This preset recommends at least 5 topics."
+      },
+      {
+        "dimension": "metadataHygiene",
+        "severity": "suggestion",
+        "message": "Improve metadata: add or refine description, topics, and README so the repo looks complete and maintainable."
+      }
+    ]
+  },
+  "prompt-library": {
+    "source": "C:\\Powercore-repo-main\\prompt-library\\README.md",
+    "overall": 59.7,
+    "keywords": [
+      "system",
+      "management",
+      "recall",
+      "prompt",
+      "features",
+      "search",
+      "variant",
+      "architecture",
+      "engine",
+      "flow",
+      "formatting",
+      "pipeline"
+    ],
+    "description_variants": [
+      "> A semantic prompt library application with auto-classification, use-case navigation, intent-first recall search, variant tracking, and advanced prompt\u2026",
+      "Prompt Library: > A semantic prompt library application with auto-classification, use-case navigation, intent-first recall search, variant tracking, and\u2026",
+      "system \u00b7 management \u00b7 recall \u00b7 prompt \u2014 > A semantic prompt library application with auto-classification, use-case navigation, intent-first recall search\u2026"
+    ],
+    "topic_ideas": [
+      "system",
+      "management",
+      "recall",
+      "prompt",
+      "features",
+      "search",
+      "variant",
+      "architecture",
+      "engine",
+      "flow",
+      "formatting",
+      "pipeline"
+    ],
+    "gaps": [
+      {
+        "dimension": "descriptionQuality",
+        "severity": "important",
+        "message": "Add a short description (what it does, who it's for, platform). Aim for 60\u2013160 characters."
+      },
+      {
+        "dimension": "topicCoverage",
+        "severity": "important",
+        "message": "Add GitHub topics (technology, use case, platform). This preset recommends at least 5 topics."
+      },
+      {
+        "dimension": "metadataHygiene",
+        "severity": "suggestion",
+        "message": "Improve metadata: add or refine description, topics, and README so the repo looks complete and maintainable."
+      }
+    ]
+  },
+  "agent-skills": {
+    "source": "C:\\Powercore-repo-main\\agent-skills\\README.md",
+    "overall": 59.7,
+    "keywords": [
+      "skill",
+      "handoff",
+      "agent",
+      "skills",
+      "report",
+      "support",
+      "warp",
+      "2024-01-05",
+      "chains",
+      "concerns",
+      "contributing",
+      "convention"
+    ],
+    "description_variants": [
+      "A production-grade repository of reusable AI agent skills designed for Warp-to-Cursor workflows.",
+      "Agent Skills Toolbox: A production-grade repository of reusable AI agent skills designed for Warp-to-Cursor workflows.",
+      "skill \u00b7 handoff \u00b7 agent \u00b7 skills \u2014 A production-grade repository of reusable AI agent skills designed for Warp-to-Cursor workflows."
+    ],
+    "topic_ideas": [
+      "skill",
+      "handoff",
+      "agent",
+      "skills",
+      "report",
+      "support",
+      "warp",
+      "2024-01-05",
+      "chains",
+      "concerns",
+      "contributing",
+      "convention"
+    ],
+    "gaps": [
+      {
+        "dimension": "descriptionQuality",
+        "severity": "important",
+        "message": "Add a short description (what it does, who it's for, platform). Aim for 60\u2013160 characters."
+      },
+      {
+        "dimension": "topicCoverage",
+        "severity": "important",
+        "message": "Add GitHub topics (technology, use case, platform). This preset recommends at least 5 topics."
+      },
+      {
+        "dimension": "metadataHygiene",
+        "severity": "suggestion",
+        "message": "Improve metadata: add or refine description, topics, and README so the repo looks complete and maintainable."
+      }
+    ]
+  },
+  "powercore-unified": {
+    "source": "C:\\Powercore-repo-main\\powercore-unified\\AGENTS.md",
+    "overall": 59.7,
+    "keywords": [
+      "database",
+      "api",
+      "commands",
+      "health",
+      "payments",
+      "runtime",
+      "agents.md",
+      "api.ts",
+      "app",
+      "architecture",
+      "auth",
+      "checkout"
+    ],
+    "description_variants": [
+      "This file provides guidance to WARP (warp.dev) when working with code in this repository.",
+      "AGENTS.md: This file provides guidance to WARP (warp.dev) when working with code in this repository.",
+      "database \u00b7 api \u00b7 commands \u00b7 health \u2014 This file provides guidance to WARP (warp.dev) when working with code in this repository."
+    ],
+    "topic_ideas": [
+      "database",
+      "api",
+      "commands",
+      "health",
+      "payments",
+      "runtime",
+      "agents.md",
+      "api.ts",
+      "app",
+      "architecture",
+      "auth",
+      "checkout"
+    ],
+    "gaps": [
+      {
+        "dimension": "descriptionQuality",
+        "severity": "important",
+        "message": "Add a short description (what it does, who it's for, platform). Aim for 60\u2013160 characters."
+      },
+      {
+        "dimension": "topicCoverage",
+        "severity": "important",
+        "message": "Add GitHub topics (technology, use case, platform). This preset recommends at least 5 topics."
+      },
+      {
+        "dimension": "metadataHygiene",
+        "severity": "suggestion",
+        "message": "Improve metadata: add or refine description, topics, and README so the repo looks complete and maintainable."
+      }
+    ]
+  }
+}

@@ -15,6 +15,16 @@ It exists to improve:
 - Primary first user: **the project author**, with a real, messy GitHub account and the desire to be more visible.
 - Secondary users: individual developers, open-source maintainers, and developer-tool builders who care about how their GitHub presence reads to humans.
 
+### v0.2 Definition
+
+Version 0.2 ships a **PowerCore onboarding UI** (browser via `Start.ps1`, and Tauri) that:
+
+- Walks the buyer through connecting GitHub (device flow + PAT fallback).
+- Runs a full-account read-only scan using the same analyzer as the CLI.
+- Shows scored results and suggestions in-app.
+
+The CLI remains fully supported. Advisory / read-only rules are unchanged.
+
 ### v0.1 Definition
 
 Version 0.1 is a **CLI-only, read-only analyzer** that:
